@@ -27,8 +27,8 @@ export default function ShowScreen() {
         const loginParam = first(params.login);
         const passwordParam = first(params.password);
 
-        // Si les params existent, on les affiche.
-        // Sinon, on charge la valeur depuis le stockage.
+        // Si login/password sont passés en params, on les affiche.
+        // Sinon, on charge seulement le login depuis le stockage.
         if (loginParam !== undefined && passwordParam !== undefined) {
           if (!cancelled) {
             setLogin(loginParam);
@@ -42,7 +42,7 @@ export default function ShowScreen() {
         if (cancelled) return;
 
         setLogin(stored?.login ?? '');
-        setPassword(stored?.password ?? '');
+        setPassword('');
         setLoading(false);
       } catch {
         if (!cancelled) setLoading(false);

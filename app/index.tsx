@@ -3,12 +3,15 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import CarIcon from '@/components/ui/icons/CarIcon';
 import { loadAuth, saveAuth } from '@/storage/authStorage';
+import { login as apiLogin } from '@/api/auth';
 
 export default function HomeScreen() {
   const router = useRouter();
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [booting, setBooting] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -20,7 +23,6 @@ export default function HomeScreen() {
 
         if (stored) {
           setLogin(stored.login);
-          setPassword(stored.password);
           router.replace('/show');
         }
       } catch {
@@ -36,8 +38,31 @@ export default function HomeScreen() {
   }, [router]);
 
   async function onSubmit() {
-    await saveAuth({ login, password });
-    router.replace('/show');
+    try {
+      setSubmitting(true);
+      setSubmitError(null);
+
+      // Appel de ton endpoint via la fonction dédiée.
+      await apiLogin(login, password);
+
+      // Persistance locale (si dispo). On ne bloque pas la redirection si ça échoue.
+      try {
+        await saveAuth(login);
+      } catch {
+        // ignore: en dev, le stockage peut être indisponible selon l'environnement
+      }
+
+      // On passe aussi les valeurs en params pour que la page "show" affiche tout de suite.
+      router.replace({
+        pathname: '/show',
+        params: { login, password },
+      });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Erreur réseau inconnue';
+      setSubmitError(message);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -83,9 +108,14 @@ export default function HomeScreen() {
                 onChangeText={setPassword}
               />
             </View>
-            <Pressable style={styles.submitButton} onPress={onSubmit}>
+            <Pressable
+              style={[styles.submitButton, submitting ? { opacity: 0.7 } : null]}
+              onPress={onSubmit}
+              disabled={submitting}
+            >
               <Text style={styles.submitButtonText}>Se connecter</Text>
             </Pressable>
+            {submitError ? <Text style={styles.errorText}>{submitError}</Text> : null}
           </View>
         </>
       )}
@@ -156,10 +186,17 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 10,
     padding: 15,
+    opacity: 1,
   },
   submitButtonText: {
     color: 'white',
     textAlign: 'center',
     fontWeight: '700',
+  },
+  errorText: {
+    marginTop: 10,
+    color: '#b00020',
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });

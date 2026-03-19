@@ -2,13 +2,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type StoredAuth = {
   login: string;
-  password: string;
 };
 
 const AUTH_KEY = 'auth_storage';
 
-export async function saveAuth(data: StoredAuth): Promise<void> {
-  await AsyncStorage.setItem(AUTH_KEY, JSON.stringify(data));
+export async function saveAuth(login: string): Promise<void> {
+  await AsyncStorage.setItem(AUTH_KEY, JSON.stringify({ login } satisfies StoredAuth));
 }
 
 export async function loadAuth(): Promise<StoredAuth | null> {
@@ -17,7 +16,7 @@ export async function loadAuth(): Promise<StoredAuth | null> {
 
   try {
     const parsed = JSON.parse(raw) as StoredAuth;
-    if (typeof parsed.login !== 'string' || typeof parsed.password !== 'string') return null;
+    if (typeof parsed.login !== 'string') return null;
     return parsed;
   } catch {
     return null;
