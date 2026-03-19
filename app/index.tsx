@@ -23,7 +23,7 @@ export default function HomeScreen() {
 
         if (stored) {
           setLogin(stored.login);
-          router.replace('/show');
+          router.replace('/dashboard');
         }
       } catch {
         // En mode dev, si le stockage local plante, on évite de bloquer l'UI.
