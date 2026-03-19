@@ -54,7 +54,7 @@ export default function HomeScreen() {
 
       // On passe aussi les valeurs en params pour que la page "show" affiche tout de suite.
       router.replace({
-        pathname: '/show',
+        pathname: '/dashboard',
         params: { login, password },
       });
     } catch (e) {
