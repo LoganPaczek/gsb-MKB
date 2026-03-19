@@ -1,50 +1,103 @@
-# Welcome to your Expo app 👋
+# Projet React Native minimal
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Ce projet a ete nettoye pour avoir une base presque vierge.
 
-## Get started
+## Ce que contient maintenant le projet
 
-1. Install dependencies
+- Une seule page: `app/index.tsx`
+- Un seul texte affiche au centre: **Hello world**
+- Style du texte en rouge
+- Un layout simple avec `expo-router`: `app/_layout.tsx`
 
-   ```bash
-   npm install
-   ```
+## Lancer le projet
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+1. Installer les dependances:
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Demarrer l'application:
 
-## Learn more
+```bash
+npm run start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Puis ouvre l'app dans Expo Go, emulateur Android, simulateur iOS ou web.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Mini doc React Native
 
-## Join the community
+### 1) Composants
 
-Join our community of developers creating universal apps.
+En React Native, tu construis l'UI avec des composants:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `View`: bloc/conteneur (comme une `div` en web)
+- `Text`: afficher du texte
+- `Image`: afficher une image
+- `Pressable` / `TouchableOpacity`: elements cliquables
+
+Un composant est une fonction qui retourne du JSX:
+
+```tsx
+import { Text, View } from 'react-native';
+
+export default function Exemple() {
+  return (
+    <View>
+      <Text>Salut</Text>
+    </View>
+  );
+}
+```
+
+### 2) Styles
+
+Les styles se font en JavaScript avec `StyleSheet.create`.
+Tu n'utilises pas du CSS classique.
+
+Exemple:
+
+```tsx
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    color: 'red',
+    fontSize: 32,
+    fontWeight: '700',
+  },
+});
+```
+
+Puis tu appliques le style:
+
+```tsx
+<View style={styles.container}>
+  <Text style={styles.title}>Hello world</Text>
+</View>
+```
+
+### 3) Mise en page avec Flexbox
+
+React Native utilise Flexbox par defaut:
+
+- `flex: 1`: prend toute la place disponible
+- `flexDirection`: `column` (defaut) ou `row`
+- `justifyContent`: aligne sur l'axe principal
+- `alignItems`: aligne sur l'axe secondaire
+
+### 4) Logique React
+
+Tu retrouves les bases de React:
+
+- `useState` pour l'etat local
+- `useEffect` pour les effets secondaires
+- Props pour passer des donnees entre composants
+
+### 5) Navigation (plus tard)
+
+Ici tu as une seule page pour debuter.
+Quand tu voudras plusieurs ecrans, tu pourras ajouter des routes dans le dossier `app/` (avec `expo-router`).
