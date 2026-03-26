@@ -1,19 +1,33 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ClockRotateIcon } from '@/components/ui/icons';
 import HistoryItem from '../ui/historyItem';
 
-export default function History() {
+export default function History({ saisiesJournalieres }: { saisiesJournalieres: any[] }) {
 
+  console.log(saisiesJournalieres);
   return (
     <View style={styles.historyContainer}>
       <View style={styles.historyHeader}>
         <ClockRotateIcon />
         <Text style={styles.historyHeaderText}>Historique récent</Text>
       </View>
-      <View style={styles.historyContent}>
-        {/* <Text>Aucune saisie pour le moment</Text> */}
-        <HistoryItem />
-      </View>
+      <ScrollView
+        style={styles.historyContent}
+        contentContainerStyle={styles.historyContentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {saisiesJournalieres.length === 0 ? (
+          <Text>Aucune saisie pour le moment</Text>
+        ) : (
+          saisiesJournalieres.map((saisieJournaliere) => (
+            <HistoryItem
+              key={saisieJournaliere.id}
+              kmJournee={saisieJournaliere.kmJournee}
+              dateSaisie={saisieJournaliere.date}
+            />
+          ))
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -41,7 +55,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   historyContent: {
-    flexDirection: 'column',
+    maxHeight: 200,
+  },
+  historyContentContainer: {
     gap: 10,
   },
 });

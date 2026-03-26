@@ -6,6 +6,7 @@ import { getVehiculeByVisiteurId } from '@/api/vehicules';
 import VehiculeCard from '@/components/dashboard/vehiculeCard';
 import Form from '@/components/form/form';
 import History from '@/components/dashboard/history';
+import { getDixSaisieJourByVisiteurId } from '@/api/saisieJour';
 
 export default function ShowScreen() {
   const params = useLocalSearchParams<{
@@ -15,6 +16,7 @@ export default function ShowScreen() {
 
   const [loading, setLoading] = useState(true);
   const [vehicule, setVehicule] = useState<any>(null);
+  const [saisiesJournalieres, setSaisiesJournalieres] = useState<any>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -28,6 +30,9 @@ export default function ShowScreen() {
 
         const vehicule = await getVehiculeByVisiteurId(stored?.login ?? '');
         setVehicule(vehicule);
+
+        const saisiesJournalieres = await getDixSaisieJourByVisiteurId(stored?.visiteurId ?? 0);
+        setSaisiesJournalieres(saisiesJournalieres);
 
         setLoading(false);
       } catch {
@@ -48,7 +53,7 @@ export default function ShowScreen() {
         <>
           <VehiculeCard vehicule={vehicule} loading={loading} />
           <Form vehiculeId={vehicule?.id ?? vehicule?.id_vehicule ?? null} />
-          <History />
+          <History saisiesJournalieres={saisiesJournalieres} />
         </>
       )}
     </View>
