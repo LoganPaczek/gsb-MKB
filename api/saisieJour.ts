@@ -17,5 +17,12 @@ export const addSaisieJour = async (date: string, kmJournee: number, id_visiteur
     throw new Error("Erreur lors de l'ajout de la saisie journalière.");
   }
 
-  return response.json();
+  const text = await response.text().catch(() => '');
+  if (!text) return null;
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error(`Réponse saisie invalide: ${text.slice(0, 120)}`);
+  }
 };

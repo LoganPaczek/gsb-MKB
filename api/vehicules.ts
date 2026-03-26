@@ -14,6 +14,14 @@ export const getVehiculeByVisiteurId = async (visiteurLogin: string) => {
   }
 
   const result = await response.text().catch(() => '');
-  return JSON.parse(result);
+  if (!result) {
+    throw new Error("Réponse véhicule vide.");
+  }
+
+  try {
+    return JSON.parse(result);
+  } catch {
+    throw new Error(`Réponse véhicule invalide: ${result.slice(0, 120)}`);
+  }
 };
 

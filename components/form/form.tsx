@@ -2,9 +2,46 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import CirclePlus from '@/components/ui/icons/CirclePlus';
 import { KmStepper, SubmitButton } from './index';
+import { loadAuth } from '@/storage/authStorage';
+import { addSaisieJour } from '@/api/saisieJour';
 
-export default function Form() {
+type Props = {
+  vehiculeId?: number | null;
+};
+
+export default function Form({ vehiculeId = null }: Props) {
   const [period, setPeriod] = useState<'journalier' | 'hebdomadaire'>('journalier');
+  const [kmValue, setKmValue] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  async function onSubmit() {
+    setError(null);
+    setSuccess(null);
+
+    if (period !== 'journalier') {
+      return;
+    }
+
+    try {
+      const stored = await loadAuth();
+      const visiteurId = stored?.visiteurId ?? null;
+      if (visiteurId === null) {
+        setError("Impossible d'enregistrer: visiteur non identifié.");
+        return;
+      }
+      if (vehiculeId === null) {
+        setError("Impossible d'enregistrer: véhicule non identifié.");
+        return;
+      }
+
+      const date = new Date().toISOString().slice(0, 10);
+      await addSaisieJour(date, kmValue, visiteurId, vehiculeId);
+      setSuccess('Saisie journalière enregistrée.');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erreur pendant l'enregistrement.");
+    }
+  }
 
 
   return (
@@ -31,8 +68,10 @@ export default function Form() {
             </Pressable>
         </View>
 
-        <KmStepper />
-        <SubmitButton />
+        <KmStepper value={kmValue} onChange={setKmValue} />
+        <SubmitButton onPress={onSubmit} />
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        {success ? <Text style={styles.successText}>{success}</Text> : null}
     </View>
   );
 }
@@ -88,5 +127,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     color: '#9AA6B8',
+  },
+  errorText: {
+    color: '#b00020',
+    fontWeight: '600',
+  },
+  successText: {
+    color: '#167d2f',
+    fontWeight: '600',
   },
 });

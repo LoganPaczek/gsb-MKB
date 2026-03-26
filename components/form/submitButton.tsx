@@ -1,8 +1,12 @@
 import { StyleSheet, Text, Pressable } from 'react-native';
 
-export default function SubmitButton() {
+type Props = {
+  onPress: () => void;
+};
+
+export default function SubmitButton({ onPress }: Props) {
   return (          
-    <Pressable style={styles.formSubmitButton}>
+    <Pressable style={styles.formSubmitButton} onPress={onPress}>
         <Text style={styles.formSubmitButtonText}>Enregistrer</Text>
     </Pressable>
   );

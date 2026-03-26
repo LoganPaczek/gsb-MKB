@@ -46,7 +46,7 @@ export default function ShowScreen() {
       ) : (
         <>
           <VehiculeCard vehicule={vehicule} loading={loading} />
-          <Form />
+          <Form vehiculeId={vehicule?.id ?? vehicule?.id_vehicule ?? null} />
         </>
       )}
     </View>

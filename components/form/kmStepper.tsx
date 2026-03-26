@@ -1,15 +1,18 @@
 import { StyleSheet, Text, Pressable, View, TextInput } from 'react-native';
-import { useState } from 'react';
 
-export default function KmStepper() {
-    const [kmValue, setKmValue] = useState(0);
+type Props = {
+  value: number;
+  onChange: (nextValue: number) => void;
+};
+
+export default function KmStepper({ value, onChange }: Props) {
   
     function incrementKm() {
-      setKmValue((prev) => prev + 1);
+      onChange(value + 1);
     }
   
     function decrementKm() {
-      setKmValue((prev) => Math.max(0, prev - 1));
+      onChange(Math.max(0, value - 1));
     }
 
 
@@ -21,10 +24,10 @@ export default function KmStepper() {
         <TextInput
         style={styles.formInput}
         keyboardType="number-pad"
-        value={String(kmValue)}
+        value={String(value)}
         onChangeText={(text) => {
             const normalized = text.replace(/[^0-9]/g, '');
-            setKmValue(normalized ? Number(normalized) : 0);
+            onChange(normalized ? Number(normalized) : 0);
         }}
         />
         <Pressable style={styles.stepButton} onPress={incrementKm}>
