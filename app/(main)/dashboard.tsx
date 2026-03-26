@@ -1,14 +1,9 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { clearAuth, loadAuth } from '@/storage/authStorage';
+import { useLocalSearchParams } from 'expo-router';
+import {  loadAuth } from '@/storage/authStorage';
 import { CarIcon } from '@/components/ui/icons';
 import { getVehiculeByVisiteurId } from '@/api/vehicules';
-
-function first(value: string | string[] | undefined): string | undefined {
-  if (Array.isArray(value)) return value[0];
-  return value;
-}
 
 export default function ShowScreen() {
   const params = useLocalSearchParams<{
@@ -16,9 +11,6 @@ export default function ShowScreen() {
     password?: string;
   }>();
 
-  const router = useRouter();
-  const [login, setLogin] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(true);
   const [vehicule, setVehicule] = useState<any>(null);
 
@@ -27,26 +19,11 @@ export default function ShowScreen() {
 
     (async () => {
       try {
-        const loginParam = first(params.login);
-        const passwordParam = first(params.password);
-
         // Si login/password sont passés en params, on les affiche.
         // Sinon, on charge seulement le login depuis le stockage.
-        if (loginParam !== undefined && passwordParam !== undefined) {
-          if (!cancelled) {
-            setLogin(loginParam);
-            setPassword(passwordParam);
-            setLoading(false);
-          }
-          return;
-        }
-
         const stored = await loadAuth();
         if (cancelled) return;
 
-        setLogin(stored?.login ?? '');
-        setPassword('');
-        
         const vehicule = await getVehiculeByVisiteurId(stored?.login ?? '');
         setVehicule(vehicule);
 
@@ -60,11 +37,6 @@ export default function ShowScreen() {
       cancelled = true;
     };
   }, [params.login, params.password]);
-
-  async function onLogout() {
-    await clearAuth();
-    router.replace('/');
-  }
 
   return (
     <View style={styles.container}>
