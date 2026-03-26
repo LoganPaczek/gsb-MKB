@@ -9,9 +9,10 @@ type Vehicule = {
   type VehiculeCardProps = {
     vehicule: Vehicule | null;
     loading?: boolean;
+    totalKmWithVehicule: number;
   };
 
-export default function VehiculeCard({ vehicule, loading }: VehiculeCardProps) {
+export default function VehiculeCard({ vehicule, loading, totalKmWithVehicule }: VehiculeCardProps) {
 
   return (
     <View style={styles.vehicleContainer}>
@@ -44,7 +45,7 @@ export default function VehiculeCard({ vehicule, loading }: VehiculeCardProps) {
                 Total
             </Text>
             <Text style={styles.vehicleInfoTotalValue}>
-                10000 km
+                {totalKmWithVehicule} km
             </Text>
             </View>
         </View>
