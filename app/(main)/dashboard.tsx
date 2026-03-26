@@ -5,6 +5,8 @@ import {  loadAuth } from '@/storage/authStorage';
 import { getVehiculeByVisiteurId } from '@/api/vehicules';
 import VehiculeCard from '@/components/dashboard/vehiculeCard';
 import Form from '@/components/form/form';
+import History from '@/components/dashboard/history';
+import { getDixSaisieJourByVisiteurId } from '@/api/saisieJour';
 
 export default function ShowScreen() {
   const params = useLocalSearchParams<{
@@ -14,6 +16,18 @@ export default function ShowScreen() {
 
   const [loading, setLoading] = useState(true);
   const [vehicule, setVehicule] = useState<any>(null);
+  const [saisiesJournalieres, setSaisiesJournalieres] = useState<any>([]);
+
+  async function refreshSaisies() {
+    const stored = await loadAuth();
+    const idVisiteur = stored?.visiteurId ?? null;
+    if (idVisiteur === null) {
+      setSaisiesJournalieres([]);
+      return;
+    }
+    const nextSaisies = await getDixSaisieJourByVisiteurId(idVisiteur);
+    setSaisiesJournalieres(Array.isArray(nextSaisies) ? nextSaisies : []);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -27,6 +41,8 @@ export default function ShowScreen() {
 
         const vehicule = await getVehiculeByVisiteurId(stored?.login ?? '');
         setVehicule(vehicule);
+
+        await refreshSaisies();
 
         setLoading(false);
       } catch {
@@ -46,7 +62,11 @@ export default function ShowScreen() {
       ) : (
         <>
           <VehiculeCard vehicule={vehicule} loading={loading} />
-          <Form vehiculeId={vehicule?.id ?? vehicule?.id_vehicule ?? null} />
+          <Form
+            vehiculeId={vehicule?.id ?? vehicule?.id_vehicule ?? null}
+            onSaved={refreshSaisies}
+          />
+          <History saisiesJournalieres={saisiesJournalieres} />
         </>
       )}
     </View>
