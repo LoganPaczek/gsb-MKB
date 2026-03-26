@@ -22,7 +22,7 @@ export default function VehiculeCard({ vehicule, loading, totalKmWithVehicule }:
                 Véhicule Actuel
             </Text>
             </View>
-            <CarIcon fill="white"/>
+            <CarIcon fill="#E0E7FF"/>
         </View>
 
         <View style={styles.vehicleInfoContainer}>
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   vehicleBrand: {
     fontSize: 14,
-    color: '#62748E',
+    color: '#E0E7FF',
   },
 
   // Info Row
