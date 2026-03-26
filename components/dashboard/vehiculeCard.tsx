@@ -54,7 +54,7 @@ export default function VehiculeCard({ vehicule, loading }: VehiculeCardProps) {
 
 const styles = StyleSheet.create({
   vehicleContainer: {
-    width: '80%',
+    width: '90%',
     backgroundColor: '#4F39F6',
     borderRadius: 15,
     padding: 16,
