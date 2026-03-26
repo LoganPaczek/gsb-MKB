@@ -5,6 +5,7 @@ import {  loadAuth } from '@/storage/authStorage';
 import { getVehiculeByVisiteurId } from '@/api/vehicules';
 import VehiculeCard from '@/components/dashboard/vehiculeCard';
 import Form from '@/components/form/form';
+import History from '@/components/dashboard/history';
 
 export default function ShowScreen() {
   const params = useLocalSearchParams<{
@@ -47,6 +48,7 @@ export default function ShowScreen() {
         <>
           <VehiculeCard vehicule={vehicule} loading={loading} />
           <Form vehiculeId={vehicule?.id ?? vehicule?.id_vehicule ?? null} />
+          <History />
         </>
       )}
     </View>
