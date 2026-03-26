@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
-import ClockRotateIcon from '@/components/ui/icons/ClockRotateIcon';
+import { ClockRotateIcon } from '@/components/ui/icons';
+import HistoryItem from '../ui/historyItem';
 
 export default function History() {
 
@@ -10,7 +11,8 @@ export default function History() {
         <Text style={styles.historyHeaderText}>Historique récent</Text>
       </View>
       <View style={styles.historyContent}>
-        <Text style={styles.historyContentText}>Aucune saisie pour le moment</Text>
+        {/* <Text>Aucune saisie pour le moment</Text> */}
+        <HistoryItem />
       </View>
     </View>
   );
@@ -40,7 +42,6 @@ const styles = StyleSheet.create({
   },
   historyContent: {
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
+    gap: 10,
   },
 });
