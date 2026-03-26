@@ -26,10 +26,10 @@ export default function VehiculeCard({ vehicule, loading }: VehiculeCardProps) {
 
         <View style={styles.vehicleInfoContainer}>
             <Text style={styles.vehicleModel}>
-            {vehicule?.marque ?? 'Non renseigné'}
+              {vehicule?.marque ?? 'Non renseigné'}
             </Text>
             <Text style={styles.vehicleBrand}>
-            {vehicule?.modele ?? 'Non renseigné'}
+              {vehicule?.modele ?? 'Non renseigné'}
             </Text>
         </View>
 
