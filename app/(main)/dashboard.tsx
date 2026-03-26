@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { clearAuth, loadAuth } from '@/storage/authStorage';
-import { CarIcon, BracketIcon } from '@/components/ui/icons';
+import { CarIcon } from '@/components/ui/icons';
+import { getVehiculeByVisiteurId } from '@/api/vehicules';
 
 function first(value: string | string[] | undefined): string | undefined {
   if (Array.isArray(value)) return value[0];
@@ -19,6 +20,7 @@ export default function ShowScreen() {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(true);
+  const [vehicule, setVehicule] = useState<any>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -44,6 +46,10 @@ export default function ShowScreen() {
 
         setLogin(stored?.login ?? '');
         setPassword('');
+        
+        const vehicule = await getVehiculeByVisiteurId(stored?.login ?? '');
+        setVehicule(vehicule);
+
         setLoading(false);
       } catch {
         if (!cancelled) setLoading(false);
@@ -78,17 +84,17 @@ export default function ShowScreen() {
 
             <View style={styles.vehicleInfoContainer}>
               <Text style={styles.vehicleModel}>
-                Skoda Superb
+                {vehicule?.marque ?? 'Non renseigné'}
               </Text>
               <Text style={styles.vehicleBrand}>
-                Renault Master
+                {vehicule?.modele ?? 'Non renseigné'}
               </Text>
             </View>
 
             <View style={styles.vehicleInfoRow}>
               <View style={styles.vehicleInfoPlateContainer}>
                 <Text style={styles.vehicleInfoPlate}>
-                  AB-123-CD
+                  {vehicule?.immatriculation ?? 'Non renseigné'}
                 </Text>
               </View>
               <View style={styles.vehicleInfoTotalContainer}>

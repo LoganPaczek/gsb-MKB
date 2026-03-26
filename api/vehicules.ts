@@ -1,11 +1,11 @@
 const API_BASE = process.env.EXPO_PUBLIC_API_URL;
 
-export const getVehiculeByVisiteurId = async (visiteurId: number) => {
+export const getVehiculeByVisiteurId = async (visiteurLogin: string) => {
   if (!API_BASE) {
     throw new Error("API non configurée.");
   }
 
-  const response = await fetch(`${API_BASE}/vehicule.php?visiteur_id=${visiteurId}`, {
+  const response = await fetch(`${API_BASE}/vehicule.php?login=${visiteurLogin}`, {
     method: 'GET',
   });
 
