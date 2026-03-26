@@ -6,7 +6,7 @@ import { getVehiculeByVisiteurId } from '@/api/vehicules';
 import VehiculeCard from '@/components/dashboard/vehiculeCard';
 import Form from '@/components/form/form';
 import History from '@/components/dashboard/history';
-import { getDixSaisieJourByVisiteurId } from '@/api/saisieJour';
+import { getDixSaisieJourByVisiteurId, getTotalKmWithVehicule } from '@/api/saisieJour';
 
 export default function ShowScreen() {
   const params = useLocalSearchParams<{
@@ -17,6 +17,7 @@ export default function ShowScreen() {
   const [loading, setLoading] = useState(true);
   const [vehicule, setVehicule] = useState<any>(null);
   const [saisiesJournalieres, setSaisiesJournalieres] = useState<any>([]);
+  const [totalKmWithVehicule, setTotalKmWithVehicule] = useState(0);
 
   async function refreshSaisies() {
     const stored = await loadAuth();
@@ -27,6 +28,8 @@ export default function ShowScreen() {
     }
     const nextSaisies = await getDixSaisieJourByVisiteurId(idVisiteur);
     setSaisiesJournalieres(Array.isArray(nextSaisies) ? nextSaisies : []);
+    const totalKm = await getTotalKmWithVehicule(idVisiteur);
+    setTotalKmWithVehicule(totalKm);
   }
 
   useEffect(() => {
@@ -61,7 +64,7 @@ export default function ShowScreen() {
         <Text>Chargement...</Text>
       ) : (
         <>
-          <VehiculeCard vehicule={vehicule} loading={loading} />
+          <VehiculeCard vehicule={vehicule} loading={loading} totalKmWithVehicule={totalKmWithVehicule} />
           <Form
             vehiculeId={vehicule?.id ?? vehicule?.id_vehicule ?? null}
             onSaved={refreshSaisies}

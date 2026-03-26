@@ -63,3 +63,32 @@ export const getDixSaisieJourByVisiteurId = async (id_visiteur: number) => {
     throw new Error(`Réponse saisies journalières invalide: ${text.slice(0, 120)}`);
   }
 };
+
+export const getTotalKmWithVehicule = async (id_visiteur: number) => {
+  if (!API_BASE) {
+    throw new Error("API non configurée.");
+  }
+
+  const response = await fetch(`${API_BASE}/saisieJour.php?id_visiteur=${id_visiteur}&current_vehicule=1`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Erreur lors de la récupération des saisies journalières.");
+  }
+
+  const text = await response.text().catch(() => '');
+  if (!text) {
+    throw new Error("Réponse saisies journalières vide.");
+  }
+
+  try {
+    const parsed = JSON.parse(text);
+    return parsed ?? 0;
+  } catch {
+    throw new Error(`Réponse total km avec véhicule invalide: ${text.slice(0, 120)}`);
+  }
+};
