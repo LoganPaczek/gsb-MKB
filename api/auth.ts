@@ -28,3 +28,28 @@ export const login = async (login: string, password: string) => {
   }
 };
 
+export const getVisiteurByLogin = async (login: string) => {
+  if (!API_BASE) {
+    throw new Error("API non configurée.");
+  }
+
+  const response = await fetch(`${API_BASE}/visiteur.php?login=${encodeURIComponent(login)}`, {
+    method: 'GET',
+  });
+
+  if (!response.ok) {
+    throw new Error("Impossible de récupérer l'utilisateur.");
+  }
+
+  const text = await response.text().catch(() => '');
+  if (!text) {
+    throw new Error("Réponse serveur vide.");
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error("Réponse serveur invalide.");
+  }
+};
+

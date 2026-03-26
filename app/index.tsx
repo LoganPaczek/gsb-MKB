@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import CarIcon from '@/components/ui/icons/CarIcon';
 import { loadAuth, saveAuth } from '@/storage/authStorage';
-import { login as apiLogin } from '@/api/auth';
+import { getVisiteurByLogin, login as apiLogin } from '@/api/auth';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function HomeScreen() {
 
         if (stored) {
           setLogin(stored.login);
-          router.replace('/show');
+          router.replace('/dashboard');
         }
       } catch {
         // En mode dev, si le stockage local plante, on évite de bloquer l'UI.
@@ -44,18 +44,25 @@ export default function HomeScreen() {
 
       // Appel de ton endpoint via la fonction dédiée.
       await apiLogin(login, password);
+      const visiteur = await getVisiteurByLogin(login);
+      const rawId = visiteur?.id ?? visiteur?.visiteur_id ?? null;
+      const visiteurId =
+        typeof rawId === 'number' ? rawId : typeof rawId === 'string' ? Number(rawId) : null;
 
       // Persistance locale (si dispo). On ne bloque pas la redirection si ça échoue.
       try {
-        await saveAuth(login);
+        await saveAuth(login, Number.isFinite(visiteurId as number) ? (visiteurId as number) : null);
       } catch {
         // ignore: en dev, le stockage peut être indisponible selon l'environnement
       }
 
       // On passe aussi les valeurs en params pour que la page "show" affiche tout de suite.
       router.replace({
-        pathname: '/show',
-        params: { login, password },
+        pathname: '/dashboard',
+        params: {
+          login,
+          ...(Number.isFinite(visiteurId as number) ? { visiteurId: String(visiteurId) } : {}),
+        },
       });
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Erreur réseau inconnue';
