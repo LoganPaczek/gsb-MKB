@@ -18,6 +18,17 @@ export default function ShowScreen() {
   const [vehicule, setVehicule] = useState<any>(null);
   const [saisiesJournalieres, setSaisiesJournalieres] = useState<any>([]);
 
+  async function refreshSaisies() {
+    const stored = await loadAuth();
+    const idVisiteur = stored?.visiteurId ?? null;
+    if (idVisiteur === null) {
+      setSaisiesJournalieres([]);
+      return;
+    }
+    const nextSaisies = await getDixSaisieJourByVisiteurId(idVisiteur);
+    setSaisiesJournalieres(Array.isArray(nextSaisies) ? nextSaisies : []);
+  }
+
   useEffect(() => {
     let cancelled = false;
 
@@ -31,8 +42,7 @@ export default function ShowScreen() {
         const vehicule = await getVehiculeByVisiteurId(stored?.login ?? '');
         setVehicule(vehicule);
 
-        const saisiesJournalieres = await getDixSaisieJourByVisiteurId(stored?.visiteurId ?? 0);
-        setSaisiesJournalieres(saisiesJournalieres);
+        await refreshSaisies();
 
         setLoading(false);
       } catch {
@@ -52,7 +62,10 @@ export default function ShowScreen() {
       ) : (
         <>
           <VehiculeCard vehicule={vehicule} loading={loading} />
-          <Form vehiculeId={vehicule?.id ?? vehicule?.id_vehicule ?? null} />
+          <Form
+            vehiculeId={vehicule?.id ?? vehicule?.id_vehicule ?? null}
+            onSaved={refreshSaisies}
+          />
           <History saisiesJournalieres={saisiesJournalieres} />
         </>
       )}

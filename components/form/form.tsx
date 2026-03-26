@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import CirclePlus from '@/components/ui/icons/CirclePlus';
 import { KmStepper, SubmitButton } from './index';
@@ -7,13 +7,30 @@ import { addSaisieJour } from '@/api/saisieJour';
 
 type Props = {
   vehiculeId?: number | null;
+  onSaved?: () => Promise<void> | void;
 };
 
-export default function Form({ vehiculeId = null }: Props) {
+export default function Form({ vehiculeId = null, onSaved }: Props) {
   const [period, setPeriod] = useState<'journalier' | 'hebdomadaire'>('journalier');
   const [kmValue, setKmValue] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!error) return;
+    const timer = setTimeout(() => {
+      setError(null);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [error]);
+
+  useEffect(() => {
+    if (!success) return;
+    const timer = setTimeout(() => {
+      setSuccess(null);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [success]);
 
   async function onSubmit() {
     setError(null);
@@ -37,6 +54,9 @@ export default function Form({ vehiculeId = null }: Props) {
 
       const date = new Date().toISOString().slice(0, 10);
       await addSaisieJour(date, kmValue, visiteurId, vehiculeId);
+      if (onSaved) {
+        await onSaved();
+      }
       setSuccess('Saisie journalière enregistrée.');
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erreur pendant l'enregistrement.");

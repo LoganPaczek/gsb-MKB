@@ -50,7 +50,15 @@ export const getDixSaisieJourByVisiteurId = async (id_visiteur: number) => {
 
   try {
     const parsed = JSON.parse(text);
-    return Array.isArray(parsed) ? parsed.slice(0, 10) : parsed;
+    if (!Array.isArray(parsed)) return parsed;
+
+    return [...parsed]
+      .sort((a, b) => {
+        const da = new Date(a?.date ?? a?.dateSaisie ?? 0).getTime();
+        const db = new Date(b?.date ?? b?.dateSaisie ?? 0).getTime();
+        return db - da;
+      })
+      .slice(0, 10);
   } catch {
     throw new Error(`Réponse saisies journalières invalide: ${text.slice(0, 120)}`);
   }
