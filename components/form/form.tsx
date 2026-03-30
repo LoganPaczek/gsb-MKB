@@ -9,10 +9,11 @@ import { addSaisieHebdo } from '@/api/saisieHebdo';
 type Props = {
   vehiculeId?: number | null;
   onSaved?: () => Promise<void> | void;
+  period: 'journalier' | 'hebdomadaire';
+  onPeriodChange: (period: 'journalier' | 'hebdomadaire') => void;
 };
 
-export default function Form({ vehiculeId = null, onSaved }: Props) {
-  const [period, setPeriod] = useState<'journalier' | 'hebdomadaire'>('journalier');
+export default function Form({ vehiculeId = null, onSaved, period, onPeriodChange }: Props) {
   const [kmValue, setKmValue] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -81,13 +82,13 @@ export default function Form({ vehiculeId = null, onSaved }: Props) {
         <View style={styles.formOptions}>
             <Pressable
             style={period === 'journalier' ? styles.formOptionSelected : styles.formOption}
-            onPress={() => setPeriod('journalier')}
+            onPress={() => onPeriodChange('journalier')}
             >
             <Text style={styles.formOptionTitle}>Journalier</Text>
             </Pressable>
             <Pressable
             style={period === 'hebdomadaire' ? styles.formOptionSelected : styles.formOption}
-            onPress={() => setPeriod('hebdomadaire')}
+            onPress={() => onPeriodChange('hebdomadaire')}
             >
             <Text style={styles.formOptionTitle}>Hebdomadaire</Text>
             </Pressable>

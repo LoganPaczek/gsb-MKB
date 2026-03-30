@@ -61,8 +61,8 @@ export default function History({ saisiesJournalieres }: { saisiesJournalieres: 
           filteredSaisies.map((saisieJournaliere) => (
             <HistoryItem
               key={saisieJournaliere.id}
-              kmJournee={saisieJournaliere.kmJournee}
-              dateSaisie={saisieJournaliere.date}
+              kmJournee={saisieJournaliere.kmJournee ?? saisieJournaliere.kmHebdo}
+              dateSaisie={saisieJournaliere.date ?? saisieJournaliere.dateSaisie}
             />
           ))
         )}

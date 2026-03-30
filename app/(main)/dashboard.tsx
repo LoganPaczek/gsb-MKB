@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import {  loadAuth } from '@/storage/authStorage';
@@ -7,6 +7,7 @@ import VehiculeCard from '@/components/dashboard/vehiculeCard';
 import Form from '@/components/form/form';
 import History from '@/components/dashboard/history';
 import { getDixSaisieJourByVisiteurId, getTotalKmWithVehicule } from '@/api/saisieJour';
+import { getDixSaisieHebdoByVisiteurId } from '@/api/saisieHebdo';
 
 export default function ShowScreen() {
   const params = useLocalSearchParams<{
@@ -18,19 +19,23 @@ export default function ShowScreen() {
   const [vehicule, setVehicule] = useState<any>(null);
   const [saisiesJournalieres, setSaisiesJournalieres] = useState<any>([]);
   const [totalKmWithVehicule, setTotalKmWithVehicule] = useState(0);
+  const [period, setPeriod] = useState<'journalier' | 'hebdomadaire'>('journalier');
 
-  async function refreshSaisies() {
+  const refreshSaisies = useCallback(async () => {
     const stored = await loadAuth();
     const idVisiteur = stored?.visiteurId ?? null;
     if (idVisiteur === null) {
       setSaisiesJournalieres([]);
       return;
     }
-    const nextSaisies = await getDixSaisieJourByVisiteurId(idVisiteur);
+    const nextSaisies =
+      period === 'journalier'
+        ? await getDixSaisieJourByVisiteurId(idVisiteur)
+        : await getDixSaisieHebdoByVisiteurId(idVisiteur);
     setSaisiesJournalieres(Array.isArray(nextSaisies) ? nextSaisies : []);
     const totalKm = await getTotalKmWithVehicule(idVisiteur);
     setTotalKmWithVehicule(totalKm);
-  }
+  }, [period]);
 
   useEffect(() => {
     let cancelled = false;
@@ -56,7 +61,7 @@ export default function ShowScreen() {
     return () => {
       cancelled = true;
     };
-  }, [params.login, params.password]);
+  }, [params.login, params.password, period, refreshSaisies]);
 
   return (
     <View style={styles.container}>
@@ -68,6 +73,8 @@ export default function ShowScreen() {
           <Form
             vehiculeId={vehicule?.id ?? vehicule?.id_vehicule ?? null}
             onSaved={refreshSaisies}
+            period={period}
+            onPeriodChange={setPeriod}
           />
           <History saisiesJournalieres={saisiesJournalieres} />
         </>
