@@ -4,6 +4,7 @@ import CirclePlus from '@/components/ui/icons/CirclePlus';
 import { KmStepper, SubmitButton } from './index';
 import { loadAuth } from '@/storage/authStorage';
 import { addSaisieJour } from '@/api/saisieJour';
+import { addSaisieHebdo } from '@/api/saisieHebdo';
 
 type Props = {
   vehiculeId?: number | null;
@@ -36,10 +37,6 @@ export default function Form({ vehiculeId = null, onSaved }: Props) {
     setError(null);
     setSuccess(null);
 
-    if (period !== 'journalier') {
-      return;
-    }
-
     try {
       const stored = await loadAuth();
       const visiteurId = stored?.visiteurId ?? null;
@@ -53,11 +50,19 @@ export default function Form({ vehiculeId = null, onSaved }: Props) {
       }
 
       const date = new Date().toISOString().slice(0, 10);
-      await addSaisieJour(date, kmValue, visiteurId, vehiculeId);
+      if (period === 'journalier') {
+        await addSaisieJour(date, kmValue, visiteurId, vehiculeId);
+      } else {
+        await addSaisieHebdo(date, kmValue, visiteurId, vehiculeId);
+      }
       if (onSaved) {
         await onSaved();
       }
-      setSuccess('Saisie journalière enregistrée.');
+      setSuccess(
+        period === 'journalier'
+          ? 'Saisie journalière enregistrée.'
+          : 'Saisie hebdomadaire enregistrée.'
+      );
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erreur pendant l'enregistrement.");
     }
